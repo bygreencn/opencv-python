@@ -1,4 +1,4 @@
-# Version: 20250611
+# Version: 20250630
 # Image name: quay.io/opencv-ci/opencv-python-manylinux2014-aarch64
 
 FROM quay.io/pypa/manylinux2014_aarch64:latest
@@ -21,7 +21,7 @@ ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 RUN yum install zlib-devel curl-devel xcb-util-renderutil-devel xcb-util-devel xcb-util-image-devel xcb-util-keysyms-devel xcb-util-wm-devel mesa-libGL-devel libxkbcommon-devel libxkbcommon-x11-devel libXi-devel lapack-devel epel-release -y && \
     yum install openblas-devel dejavu-sans-fonts -y && \
     cp /usr/include/lapacke/lapacke*.h /usr/include/ && \
-    curl https://raw.githubusercontent.com/xianyi/OpenBLAS/v0.3.3/cblas.h -o /usr/include/cblas.h && \
+    cp /usr/include/openblas/*.h /usr/include/ && \
     # libpng will be built from source
     yum remove libpng -y
 
