@@ -163,7 +163,7 @@ def main():
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
     ci_cmake_generator = (
-        ["-G", "Visual Studio 14" + (" Win64" if is64 else "")]
+        ["-G", "Visual Studio 17 2022"]
         if os.name == "nt"
         else ["-G", "Unix Makefiles"]
     )
