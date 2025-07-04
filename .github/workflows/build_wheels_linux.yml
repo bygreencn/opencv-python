@@ -3,8 +3,6 @@ name: Linux x86_64
 on:
   pull_request:
     branches:
-      - master
-      - 3.4
       - 4.x
       - 5.x
     paths-ignore:
@@ -88,7 +86,7 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
       NP_TEST_DEP: numpy==1.19.4
-      NP_TEST_DEP_LATEST: numpy==2.2.1
+      NP_TEST_DEP_LATEST: numpy==2.2.6
       CONFIG_PATH: travis_config.sh
       PLAT: x86_64
     steps:

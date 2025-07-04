@@ -3,8 +3,6 @@ name: macOS ARM64
 on:
   pull_request:
     branches:
-      - master
-      - 3.4
       - 4.x
       - 5.x
     paths-ignore:
