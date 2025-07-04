@@ -22,17 +22,11 @@ def main():
     build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
     build_rolling = get_build_env_var_by_name("rolling")
 
+    # NOTE: since 2.3.0 numpy upgraded from manylinux2014 to manylinux_2_28
+    # see https://numpy.org/doc/stable/release/2.3.0-notes.html#numpy-2-3-0-release-notes
     install_requires = [
-        'numpy>=1.13.3; python_version<"3.7"',
-        'numpy>=1.17.0; python_version>="3.7"', # https://github.com/numpy/numpy/pull/13725
-        'numpy>=1.17.3; python_version>="3.8"',
-        'numpy>=1.19.3; python_version>="3.9"',
-        'numpy>=1.21.2; python_version>="3.10"',
-        'numpy>=1.19.3; python_version>="3.6" and platform_system=="Linux" and platform_machine=="aarch64"',
-        'numpy>=1.21.0; python_version<="3.9" and platform_system=="Darwin" and platform_machine=="arm64"',
-        'numpy>=1.21.4; python_version>="3.10" and platform_system=="Darwin"',
-        "numpy>=1.23.5; python_version>='3.11'",
-        "numpy>=1.26.0; python_version>='3.12'"
+        'numpy<2.0; python_version<"3.9"',
+        'numpy(>=2, <2.3.0); python_version>="3.9"',
     ]
 
     python_version = cmaker.CMaker.get_python_version()
