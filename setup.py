@@ -214,10 +214,10 @@ def main():
         cmake_args.append("-DWITH_WIN32UI=OFF")
         cmake_args.append("-DWITH_QT=OFF")
         cmake_args.append("-DWITH_GTK=OFF")
-        if is_CI_build:
-            cmake_args.append(
-                "-DWITH_MSMF=OFF"
-            )  # see: https://github.com/skvark/opencv-python/issues/263
+        # see: https://github.com/skvark/opencv-python/issues/263
+        # see: https://github.com/opencv/opencv-python/issues/771
+        cmake_args.append("-DWITH_MSMF=OFF")
+        cmake_args.append("-DWITH_OBSENSOR=OFF") # Orbbec cameras backend uses MSMF API
 
     if sys.platform.startswith("linux") and not is64 and "bdist_wheel" in sys.argv:
         subprocess.check_call("patch -p0 < patches/patchOpenEXR", shell=True)
