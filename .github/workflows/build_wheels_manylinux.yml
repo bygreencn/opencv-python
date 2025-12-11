@@ -1,4 +1,4 @@
-name: Linux x86_64
+name: Manylinux
 
 on:
   pull_request:
@@ -6,7 +6,6 @@ on:
       - 4.x
       - 5.x
     paths-ignore:
-      - '.github/workflows/build_wheels_linux_arm.yml'
       - '.github/workflows/build_wheels_windows*'
       - '.github/workflows/build_wheels_macos*'
   release:
@@ -76,7 +75,7 @@ jobs:
       with:
         submodules: false
         fetch-depth: 0
-        
+
     - name: Build a package
       run: source scripts/build.sh
     - name: Saving a wheel accordingly to matrix

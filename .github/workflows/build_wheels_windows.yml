@@ -6,7 +6,7 @@ on:
       - 4.x
       - 5.x
     paths-ignore:
-      - '.github/workflows/build_wheels_linux*'
+      - '.github/workflows/build_wheels_manylinux*'
       - '.github/workflows/build_wheels_macos*'
   release:
     types: [published, edited]
