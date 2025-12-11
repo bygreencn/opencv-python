@@ -1,4 +1,5 @@
-#
+# version: 20251211
+# Image name: quay.io/opencv-ci/opencv-python-musllinux_1_2-x86-64
 FROM quay.io/pypa/musllinux_1_2_x86_64:latest
 
 ARG CCACHE_VERSION=3.7.9
