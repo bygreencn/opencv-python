@@ -243,6 +243,7 @@ jobs:
 
       - name: Upload all wheels
         run: |
+          tree
           python -m pip install twine
           python -m twine upload --repository testpypi -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} --skip-existing wheelhouse/wheel-*/opencv_* wheelhouse/wheel-*/opencv-*
 
