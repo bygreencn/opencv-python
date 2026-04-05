@@ -7,6 +7,7 @@ import subprocess
 import re
 import sysconfig
 import platform
+import shutil
 from skbuild import cmaker, setup
 
 
@@ -21,6 +22,10 @@ def main():
     build_headless = get_build_env_var_by_name("headless")
     build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
     build_rolling = get_build_env_var_by_name("rolling")
+    DEPENDENCIES_DIR = os.getenv("DEPENDENCIES_DIR")
+    if DEPENDENCIES_DIR:
+        DEPENDENCIES_DIR = DEPENDENCIES_DIR.replace("\\", "/")
+
 
     install_requires = [
         'numpy<2.0; python_version<"3.9"',
@@ -68,6 +73,23 @@ def main():
 
     package_version, build_contrib, build_headless, build_rolling = get_and_set_info(
         build_contrib, build_headless, build_rolling, is_CI_build
+    )
+    print("Copying CMake files...")
+    print("Source: %s" % os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/CMakeLists.txt").replace("\\", "/"))
+    print("Destination: %s" % os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/CMakeLists.txt").replace("\\", "/"))
+    shutil.copy(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/CMakeLists.txt").replace("\\", "/"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/CMakeLists.txt").replace("\\", "/")
+    )
+
+    shutil.copy(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/FindFreetype.cmake").replace("\\", "/"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/FindFreetype.cmake").replace("\\", "/")
+    )
+
+    shutil.copy(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/FindHarfbuzz.cmake").replace("\\", "/"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/FindHarfbuzz.cmake").replace("\\", "/")
     )
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
@@ -165,11 +187,11 @@ def main():
         + [
             # skbuild inserts PYTHON_* vars. That doesn't satisfy opencv build scripts in case of Py3
             "-DPYTHON3_EXECUTABLE=%s" % sys.executable,
-            "-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
+            #"-DPYTHON_DEFAULT_EXECUTABLE=%s" % sys.executable,
             "-DPYTHON3_INCLUDE_DIR=%s" % python_include_dir,
             "-DPYTHON3_LIBRARY=%s" % python_lib_path,
             "-DBUILD_opencv_python3=ON",
-            "-DBUILD_opencv_python2=OFF",
+            #"-DBUILD_opencv_python2=OFF",
             # Disable the Java build by default as it is not needed
             "-DBUILD_opencv_java=%s" % build_java,
             # Relative dir to install the built module to in the build tree.
@@ -180,14 +202,18 @@ def main():
             "-DINSTALL_CREATE_DISTRIB=ON",
             # See opencv/CMakeLists.txt for options and defaults
             "-DBUILD_opencv_apps=OFF",
-            "-DBUILD_opencv_freetype=OFF",
             "-DBUILD_SHARED_LIBS=OFF",
             "-DBUILD_TESTS=OFF",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
             "-DPYTHON3_LIMITED_API=ON",
-            "-DBUILD_OPENEXR=ON",
+            "-DBUILD_OPENEXR=ON"
         ]
+        +(
+            ["-DBUILD_opencv_freetype=ON",
+             "-DFREETYPE_DIR=%s" % DEPENDENCIES_DIR,
+             "-DHARFBUZZ_DIR=%s" % DEPENDENCIES_DIR]
+        )
         + (
             # CMake flags for windows/arm64 build
             ["-DCMAKE_GENERATOR_PLATFORM=ARM64",
