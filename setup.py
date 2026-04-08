@@ -7,6 +7,7 @@ import subprocess
 import re
 import sysconfig
 import platform
+import shutil
 from skbuild import cmaker, setup
 
 
@@ -19,8 +20,13 @@ def main():
     minimum_supported_numpy = "1.13.3"
     build_contrib = get_build_env_var_by_name("contrib")
     build_headless = get_build_env_var_by_name("headless")
-    build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
+    #build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
+    build_java = "OFF"
     build_rolling = get_build_env_var_by_name("rolling")
+    DEPENDENCIES_DIR = os.getenv("DEPENDENCIES_DIR")
+    if DEPENDENCIES_DIR:
+        DEPENDENCIES_DIR = DEPENDENCIES_DIR.replace("\\", "/")
+
 
     install_requires = [
         'numpy<2.0; python_version<"3.9"',
@@ -69,6 +75,33 @@ def main():
     package_version, build_contrib, build_headless, build_rolling = get_and_set_info(
         build_contrib, build_headless, build_rolling, is_CI_build
     )
+
+    if build_contrib:
+        print("*****************************************************************")
+        print("Copying CMake files...")
+        print("Source: %s" % os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/CMakeLists.txt").replace("\\", "/"))
+        print("Destination: %s" % os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/CMakeLists.txt").replace("\\", "/"))
+        shutil.copy(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/CMakeLists.txt").replace("\\", "/"),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/CMakeLists.txt").replace("\\", "/")
+        )
+
+        shutil.copy(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/FindFreetype.cmake").replace("\\", "/"),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/FindFreetype.cmake").replace("\\", "/")
+        )
+
+        shutil.copy(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "freetype_patch/FindHarfbuzz.cmake").replace("\\", "/"),
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/FindHarfbuzz.cmake").replace("\\", "/")
+        )
+        print("*****************************************************************")
+        print("DEPENDENCIES_DIR %s file list:" % DEPENDENCIES_DIR)
+        for root, dirs, files in os.walk(os.path.abspath(DEPENDENCIES_DIR)):
+            for file in files:
+                full_path = os.path.join(root, file)
+                print(full_path)
+        print("*****************************************************************")
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
     is64 = sys.maxsize > 2 ** 32
@@ -180,8 +213,9 @@ def main():
             "-DINSTALL_CREATE_DISTRIB=ON",
             # See opencv/CMakeLists.txt for options and defaults
             "-DBUILD_opencv_apps=OFF",
-            "-DBUILD_opencv_freetype=OFF",
+            #"-DBUILD_opencv_freetype=OFF",
             "-DBUILD_SHARED_LIBS=OFF",
+            "-DBUILD_WITH_STATIC_CRT=ON" if os.name == "nt" else "",
             "-DBUILD_TESTS=OFF",
             "-DBUILD_PERF_TESTS=OFF",
             "-DBUILD_DOCS=OFF",
@@ -201,7 +235,12 @@ def main():
             else []
           )
         + (
-            ["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules")]
+            ["-DOPENCV_EXTRA_MODULES_PATH=" + os.path.abspath("opencv_contrib/modules"),
+             "-DBUILD_opencv_freetype=ON",
+             "-DFREETYPE_DIR=%s" % DEPENDENCIES_DIR,
+             "-DHARFBUZZ_DIR=%s" % DEPENDENCIES_DIR,
+             "-DFreetype_DIR=%s" % DEPENDENCIES_DIR,
+             "-DHarfBuzz_DIR=%s" % DEPENDENCIES_DIR]
             if build_contrib
             else []
         )
