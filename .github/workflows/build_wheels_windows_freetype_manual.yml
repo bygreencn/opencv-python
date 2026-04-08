@@ -41,19 +41,19 @@
          fi
 
      - name: Checkout
-       uses: actions/checkout@v4
+       uses: actions/checkout@v6
        with:
          submodules: false
          fetch-depth: 0
   
      - name: Setup MSBuild.exe
-       uses: microsoft/setup-msbuild@v1.1
+       uses: microsoft/setup-msbuild@v3
      
      - name: Setup NASM
        uses: ilammy/setup-nasm@v1
 
      - name: Set up Python ${{ matrix.python-version }}
-       uses: actions/setup-python@v4
+       uses: actions/setup-python@v6
        with:
          python-version: ${{ matrix.python-version }}
          architecture: ${{ matrix.platform }}
@@ -136,13 +136,13 @@
        shell: cmd
      
      - name: Saving all wheels
-       uses: actions/upload-artifact@v4
+       uses: actions/upload-artifact@v6
        with:
          name: wheel-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
          path: wheelhouse/opencv*
          
      - name: Saving Cmake log files
-       uses: actions/upload-artifact@v4
+       uses: actions/upload-artifact@v6
        if: failure() 
        with:
          name: cmake_log-${{ matrix.with_contrib }}-${{ matrix.without_gui }}-${{ matrix.build_sdist }}-${{ matrix.platform }}
@@ -175,12 +175,12 @@
          rm -rf ./.??* || true
        working-directory: ${{ github.workspace }}
      - name: Checkout
-       uses: actions/checkout@v4
+       uses: actions/checkout@v6
        with:
          submodules: true
          fetch-depth: 0
      - name: Set up Python ${{ matrix.python-version }}
-       uses: actions/setup-python@v4
+       uses: actions/setup-python@v6
        with:
          python-version: ${{ matrix.python-version }}
          architecture: ${{ matrix.platform }}
