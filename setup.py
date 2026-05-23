@@ -96,11 +96,12 @@ def main():
             os.path.join(os.path.dirname(os.path.abspath(__file__)), "opencv_contrib/modules/freetype/FindHarfbuzz.cmake").replace("\\", "/")
         )
         print("*****************************************************************")
-        print("DEPENDENCIES_DIR %s file list:" % DEPENDENCIES_DIR)
-        for root, dirs, files in os.walk(os.path.abspath(DEPENDENCIES_DIR)):
-            for file in files:
-                full_path = os.path.join(root, file)
-                print(full_path)
+        if DEPENDENCIES_DIR:
+            print("DEPENDENCIES_DIR %s file list:" % DEPENDENCIES_DIR)
+            for root, dirs, files in os.walk(os.path.abspath(DEPENDENCIES_DIR)):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    print(full_path)
         print("*****************************************************************")
 
     # https://stackoverflow.com/questions/1405913/python-32bit-or-64bit-mode
