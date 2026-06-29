@@ -103,8 +103,9 @@ jobs:
     env:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       MB_PYTHON_VERSION: ${{ matrix.python-version }}
-      NP_TEST_DEP: numpy==1.19.4
-      NP_TEST_DEP_LATEST: numpy==2.2.6
+      NP_TEST_DEP_OLD: numpy==1.19.4
+      NP_TEST_DEP: numpy==2.2.6
+      NP_TEST_DEP_LATEST: numpy==2.5.0
       CONFIG_PATH: travis_config.sh
       PLAT: ${{ matrix.platform }}
       SDIST: ${{ matrix.build_sdist || 0 }}
@@ -122,7 +123,16 @@ jobs:
         fetch-depth: 0
 
     - name: Setup Environment variables
-      run: if [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" -o "3.14" == "${{ matrix.python-version }}" ]; then echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV; else echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV; fi
+      run: |
+        if [ "3.8" == "${{ matrix.python-version }}" -o "3.9" == "${{ matrix.python-version }}" ]
+        then
+            echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_OLD)" >> $GITHUB_ENV
+        elif [ "3.10" == "${{ matrix.python-version }}" -o "3.11" == "${{ matrix.python-version }}" -o "3.12" == "${{ matrix.python-version }}" -o "3.13" == "${{ matrix.python-version }}" ]
+        then
+            echo "TEST_DEPENDS=$(echo $NP_TEST_DEP)" >> $GITHUB_ENV
+        else
+            echo "TEST_DEPENDS=$(echo $NP_TEST_DEP_LATEST)" >> $GITHUB_ENV
+        fi
     - name: Download a wheel accordingly to matrix
       uses: actions/download-artifact@v4
       with:
