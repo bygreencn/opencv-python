@@ -6,7 +6,7 @@ on:
 
 jobs:
   Build:
-    runs-on: windows-2022
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
@@ -81,7 +81,7 @@ jobs:
         python --version
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        python -m pip install cmake==3.24.2
+        python -m pip install cmake==4.4.0
         python -m pip install toml && python -c "import toml; c = toml.load('pyproject.toml'); print('\n'.join(c['build-system']['requires']))" >> requirements.txt | python -m pip install -r requirements.txt
     - name: Create Deps Directory
       if: env.ENABLE_CONTRIB  == '1'
@@ -146,7 +146,7 @@ jobs:
     - name: Build a package
       # CMake 3.25 regression fix. See https://stackoverflow.com/questions/74162633/problem-compiling-from-source-opencv-with-mvsc2019-in-64-bit-version
       run: |
-        set "CI_BUILD=1" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
+        set "CI_BUILD=1" && set "CMAKE_GENERATOR_ARGS=${{ steps.get-generator.outputs.cmake_generator_args }}" && python setup.py bdist_wheel --py-limited-api=cp37 --dist-dir=%cd%\wheelhouse -v
       shell: cmd
     - name: Saving all wheels
       uses: actions/upload-artifact@v7

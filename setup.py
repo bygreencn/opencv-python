@@ -23,6 +23,7 @@ def main():
     #build_java = "ON" if get_build_env_var_by_name("java") else "OFF"
     build_java = "OFF"
     build_rolling = get_build_env_var_by_name("rolling")
+    CMAKE_GENERATOR_ARGS = os.environ.get("CMAKE_GENERATOR_ARGS", "")
     DEPENDENCIES_DIR = os.getenv("DEPENDENCIES_DIR")
     if DEPENDENCIES_DIR:
         DEPENDENCIES_DIR = DEPENDENCIES_DIR.replace("\\", "/")
@@ -189,7 +190,7 @@ def main():
     files_outside_package_dir = {"cv2": ["LICENSE.txt", "LICENSE-3RD-PARTY.txt"]}
 
     ci_cmake_generator = (
-        ["-G", "Visual Studio 17 2022"]
+        ["-G", CMAKE_GENERATOR_ARGS]
         if os.name == "nt"
         else ["-G", "Unix Makefiles"]
     )
